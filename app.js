@@ -60,7 +60,43 @@ const OTHER_FOSSILS = [
   },
 ];
 
-// TODO: Replace this comment with your code
+app.get('/top-fossils', (req, res) => {
+  const worthless = MOST_LIKED_FOSSILS
+  if (req.session.username) {
+    res.render('top-fossils.html.njk', {
+      fossils: worthless,
+      user: req.session.username
+    })
+    return
+  }
+  else {
+    res.redirect('/')
+  }
+})
+
+app.get('/', (req, res) => {
+  if (req.session.username) {
+    res.redirect('/top-fossils')
+    return
+  }
+  else {
+    res.render('homepage.html.njk')
+  }
+})
+
+app.get('/get-name', (req, res) => {
+  const user = req.query.name
+  req.session.username = user
+  res.redirect('/top-fossils')
+})
+
+app.post('/like-fossil', (req, res) => {
+  const likedFossil = req.body.likedfossil
+  MOST_LIKED_FOSSILS[likedFossil].num_likes += 1
+  res.render('thank-you.html.njk', {
+    user: req.session.username
+  })
+})
 
 app.get('/random-fossil.json', (req, res) => {
   const randomFossil = lodash.sample(OTHER_FOSSILS);
